@@ -17,4 +17,4 @@ Bir mekanik değişikliğinin estetiği nasıl değiştirdiğini 2048 üzerinde 
 
 ## Takım arkadaşıyla karşılaştırma
 
-> _Buraya takım arkadaşının en az bir satırlık cevabıyla kendi cevabın arasındaki farkı yaz (föyün son maddesi)._
+Takımım henüz kurulmadığı için bu satırı bir takım arkadaşıyla karşılaştıramadım. K1 (4. hafta) takım teslimine kadar aynı tabloyu takım arkadaşımla doldurup farklarını tartışacağım.
