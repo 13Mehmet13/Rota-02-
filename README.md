@@ -16,7 +16,8 @@
 | `Rota02/scene_gizmos.png` | Gizmos çizgileri görünürken Scene ekran görüntüsü |
 | `Rota02/deney_sonuclari.md` | Föydeki deney ve doğrulamaların otomatik ölçüm sonuçları |
 | `Assets/Tests/PlayMode/Rota02Deneyleri.cs` | Bu ölçümleri üreten PlayMode testi |
-| `Assets/Scripts/Uydu.cs`, `KoniCiz.cs`, `MermiAtici.cs` | Bonuslar: Uydu, Koniyi çiz, Mermi |
+| `Assets/Scripts/Uydu.cs`, `KoniCiz.cs`, `MermiAtici.cs`, `Nisangah.cs` | Bonuslar: Uydu, Koniyi çiz, Mermi, Nişangah (fare → dünya) |
+| `Rota02/threejs_notu.md` | Bonus: Three.js editöründe ebeveyn–çocuk (yerel uzay) denemesi |
 
 ## Deneyler ve doğrulamalar (özet)
 
@@ -27,6 +28,7 @@ Föydeki deneyler `Rota02Deneyleri.cs` ile Unity'de otomatik çalıştırıldı 
 - **Yarim Aci:** 10° → 20 sn'de hiç görmüyor; 35° → %87; 80° → %99 (iç çarpım eşiği `cos(açı)`).
 - **İşaretler doğrulandı:** balon sağdayken `Cross(forward, yon).y > 0` ve sağ kanat aşağı; solda tersi. Uçak uçaksavarın sağındayken `YanTaraf > 0`.
 - **Yeşile dönüş açısı:** uçak sabitken uçaksavarı döndürünce çizgi 29.5°…38.0° arasında yeşil (teorik 29.1°…38.3°).
+- **Nişangah:** fare imlecinden `ScreenPointToRay` ile çıkan ışın y=30 düzlemiyle kesiştirilip Balon oraya taşınıyor (geri izdüşüm hatası 0 px).
 - **`.normalized` deneyi:** föydeki kodda ilerleme `transform.forward` ile yapıldığı ve `LookRotation` zaten normalize ettiği için ifadeyi kaldırmak davranışı **değiştirmiyor** (açı farkı 0°). Fırlama, ilerleme `yon * hiz` ile yapılırsa görülür (hız = uzaklık × 14 ≈ 1019 m/s).
 
 ## Çalıştırma

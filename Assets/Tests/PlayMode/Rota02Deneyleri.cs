@@ -251,6 +251,24 @@ public class Rota02Deneyleri
             }
         }
         Satir($"- **Mermi:** 8 sn'de {mermiGorulen} mermi üretildi (ilk atış t={F(ilkAtis)} sn, yalnızca `Goruyor` true iken); ölçülen mermi hızı ≈ {F(hizOlcum)} m/s (= normalize yön × 60); mermiler uçağa en fazla {F(enYakinMermiMesafe)} m yaklaştı (düz çizgide, fizik yok; uçak hareket ettiği için tam isabet garanti değil).");
+
+        yield return Yukle();
+        var nis = GameObject.Find("Nisangah");
+        Assert.IsNotNull(nis, "Nisangah yok");
+        var nisBilesen = nis.GetComponent(Type.GetType("Nisangah, Assembly-CSharp"));
+        var hedefle = nisBilesen.GetType().GetMethod("Hedefle");
+        var kam = Camera.main; Assert.IsNotNull(kam);
+        var noktalar = new[] { new Vector2(0.5f, 0.4f), new Vector2(0.3f, 0.3f), new Vector2(0.7f, 0.35f) };
+        string nisSatir = "";
+        foreach (var n in noktalar)
+        {
+            var px = new Vector2(n.x * Screen.width, n.y * Screen.height);
+            bool ok = (bool)hedefle.Invoke(nisBilesen, new object[] { px });
+            Vector3 geri = kam.WorldToScreenPoint(balon.position);
+            nisSatir += $"ekran ({F(px.x)}, {F(px.y)}) → Balon {V(balon.position)} (geri izdüşüm farkı {F(Vector2.Distance(px, geri))} px); ";
+            Assert.IsTrue(ok);
+        }
+        Satir($"- **Nişangah:** imleçten çıkan `ScreenPointToRay` ışını y=30 düzlemiyle kesiştirilip Balon oraya taşınıyor. {nisSatir}Balon her seferinde y=30'da kalıyor ve ekrana geri izdüşümü imleçle aynı noktaya düşüyor; sol fare tuşu basılıyken `Update` bunu çağırır.");
         Satir("- **Koniyi çiz:** `KoniCiz.cs` Uçaksavar'a eklendi; `Quaternion.AngleAxis(±yarı açı, Vector3.up) * forward` ile iki kenar sarı çizilir (Scene görünümünde).");
 
         File.WriteAllText(Path.Combine(Application.dataPath, "../Rota02/deney_sonuclari.md"), rapor.ToString(), new UTF8Encoding(false));

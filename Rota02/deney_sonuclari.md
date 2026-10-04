@@ -48,5 +48,6 @@ _Unity 6.3 LTS PlayMode testi, sabit adım = 1/60 sn (`Time.captureDeltaTime`). 
 
 ## 9) Bonus görevler (ölçüm)
 - **Uydu:** 5 sn boyunca uçak 64.62 m ilerlerken Uydu'nun yörünge pivotuna uzaklığı sabit kaldı (min 2.86 m, max 2.86 m) ve Uydu uçakla birlikte gitti (yerel uzay).
-- **Mermi:** 8 sn'de 10 mermi üretildi (ilk atış t=2.55 sn, yalnızca `Goruyor` true iken); ölçülen mermi hızı ≈ 60.00 m/s (= normalize yön × 60); mermiler uçağa en fazla 0.43 m yaklaştı (düz çizgide, fizik yok; uçak hareket ettiği için tam isabet garanti değil).
+- **Mermi:** 8 sn'de 9 mermi üretildi (ilk atış t=2.55 sn, yalnızca `Goruyor` true iken); ölçülen mermi hızı ≈ 60.00 m/s (= normalize yön × 60); mermiler uçağa en fazla 0.43 m yaklaştı (düz çizgide, fizik yok; uçak hareket ettiği için tam isabet garanti değil).
+- **Nişangah:** imleçten çıkan `ScreenPointToRay` ışını y=30 düzlemiyle kesiştirilip Balon oraya taşınıyor. ekran (320.00, 192.00) → Balon (-26.23, 30.00, -27.59) (geri izdüşüm farkı 0.00 px); ekran (192.00, 144.00) → Balon (-37.08, 30.00, -30.44) (geri izdüşüm farkı 0.00 px); ekran (448.00, 168.00) → Balon (-23.84, 30.00, -36.62) (geri izdüşüm farkı 0.00 px); Balon her seferinde y=30'da kalıyor ve ekrana geri izdüşümü imleçle aynı noktaya düşüyor; sol fare tuşu basılıyken `Update` bunu çağırır.
 - **Koniyi çiz:** `KoniCiz.cs` Uçaksavar'a eklendi; `Quaternion.AngleAxis(±yarı açı, Vector3.up) * forward` ile iki kenar sarı çizilir (Scene görünümünde).
