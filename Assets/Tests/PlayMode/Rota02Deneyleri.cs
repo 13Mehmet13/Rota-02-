@@ -18,7 +18,7 @@ public class Rota02Deneyleri
     private static readonly CultureInfo C = CultureInfo.InvariantCulture;
 
     private Transform ucak, balon, savar, pervane;
-    private Component git, radar;
+    private Component git, radar, kalkis;
 
     private static string F(float v) => v.ToString("0.00", C);
     private static string V(Vector3 v) => $"({F(v.x)}, {F(v.y)}, {F(v.z)})";
@@ -36,6 +36,16 @@ public class Rota02Deneyleri
         return (T)p.GetValue(c);
     }
 
+
+    // Deneylerin eski "havada başla" düzenini korur: kalkışı kapatır, uçağı (0,20,0)'a koyar.
+    private void HavadaBasla(bool hareketli = true)
+    {
+        if (kalkis != null) ((Behaviour)kalkis).enabled = false;
+        ((Behaviour)git).enabled = hareketli;
+        ucak.position = new Vector3(0, 20, 0);
+        ucak.rotation = Quaternion.identity;
+    }
+
     private IEnumerator Yukle()
     {
         Time.captureDeltaTime = Dt;
@@ -47,6 +57,7 @@ public class Rota02Deneyleri
         savar = GameObject.Find("Uçaksavar").transform;
         pervane = ucak.Find("Pervane");
         git = ucak.GetComponent(Type.GetType("HedefeGit, Assembly-CSharp"));
+        kalkis = ucak.GetComponent(Type.GetType("Kalkis, Assembly-CSharp"));
         radar = savar.GetComponent(Type.GetType("Radar, Assembly-CSharp"));
         Assert.IsNotNull(git); Assert.IsNotNull(radar); Assert.IsNotNull(pervane);
     }
@@ -62,6 +73,7 @@ public class Rota02Deneyleri
 
         // ---------- 0) Burun yönü ----------
         yield return Yukle();
+        HavadaBasla(false);
         var burunYonu = (pervane.position - ucak.position).normalized;
         Satir("\n## 0) Uçağın burnu +Z mi?");
         Satir($"- Pervane yerel konumu: {V(pervane.localPosition)}; dünya yönünde burun = {V(burunYonu)}; `Dot(transform.forward, burun)` = {F(Vector3.Dot(ucak.forward, burunYonu))}");
@@ -69,12 +81,14 @@ public class Rota02Deneyleri
 
         // ---------- 1) Isınma ----------
         yield return Yukle();
+        HavadaBasla(false);
         Satir("\n## 1) Isınma — dönüşümler");
         var pLokal0 = pervane.localPosition; var pDunya0 = pervane.position;
         ucak.rotation = Quaternion.Euler(0, 90, 0);
         yield return null;
         Satir($"- Uçak Rotation Y = 90: pervane **yerel** konum {V(pLokal0)} → {V(pervane.localPosition)} (değişmedi); **dünya** konumu {V(pDunya0)} → {V(pervane.position)} (uçakla birlikte döndü).");
         yield return Yukle();
+        HavadaBasla(false);
         var balonBaslangic = balon.position;
         balon.SetParent(savar, true);
         savar.position += new Vector3(10, 0, 0);
@@ -88,6 +102,8 @@ public class Rota02Deneyleri
         // ---------- 2) Temel uçuş ----------
         yield return Yukle();
         Satir("\n## 2) HedefeGit — temel uçuş (hız 14 m/s, dönüş 60 °/s, varış 8 m)");
+        Vector3 ilkKonum = ucak.position;
+        float yerdenKalkis = -1, devir = -1, enYuksek = 0;
         float t = 0, minMesafe = float.MaxValue, varis = -1;
         float goruyorSure = 0, ilkGoruyor = -1, sonGoruyor = -1;
         string izler = "";
@@ -96,15 +112,19 @@ public class Rota02Deneyleri
             yield return null; t += Dt;
             float m = Vector3.Distance(ucak.position, balon.position);
             if (m < minMesafe) minMesafe = m;
+            if (yerdenKalkis < 0 && ucak.position.y > 0.3f) yerdenKalkis = t;
+            if (devir < 0 && kalkis != null && !((Behaviour)kalkis).enabled) devir = t;
+            enYuksek = Mathf.Max(enYuksek, ucak.position.y);
             if (varis < 0 && m < 8.05f) varis = t;
             if (Get<bool>(radar, "Goruyor")) { goruyorSure += Dt; if (ilkGoruyor < 0) ilkGoruyor = t; sonGoruyor = t; }
             if (Mathf.Abs(t % 2f) < Dt * 0.5f || Mathf.Abs(t % 2f - 2f) < Dt * 0.5f)
                 izler += $"t={F(t)}s: uzaklık {F(m)} m; ";
         }
-        Satir($"- İlk uzaklık ≈ {F(Vector3.Distance(new Vector3(0, 20, 0), balon.position))} m (çıkarma + `.magnitude`).");
+        Satir($"- **Kalkış:** uçak pistte {V(ilkKonum)}'den başlıyor (tekerlekler zeminde, y=0). Pistte hızlanıp t={F(yerdenKalkis)} sn'de yerden kesiliyor (y>0.3 m), t={F(devir)} sn'de 9 m'ye çıkıp kontrolü HedefeGit'e devrediyor; sonra balona gidiyor.");
+        Satir($"- İlk uzaklık ≈ {F(Vector3.Distance(ilkKonum, balon.position))} m (çıkarma + `.magnitude`).");
         Satir($"- Varış mesafesi (8 m) altına inme zamanı: **{(varis < 0 ? "20 sn içinde varmadı" : F(varis) + " sn")}**; en yakın uzaklık {F(minMesafe)} m (varış eşiğinde duruyor, titremiyor/zıplamıyor).");
         Satir($"- Zaman çizelgesi: {izler}");
-        Satir($"- Uçak son yönü hedefe: `Dot(forward, yon)` = {F(Vector3.Dot(ucak.forward, (balon.position - ucak.position).normalized))}");
+        Satir($"- Uçak son yönü hedefe: `Dot(forward, yon)` = {F(Vector3.Dot(ucak.forward, (balon.position - ucak.position).normalized))}; uçuş boyunca en yüksek nokta y = {F(enYuksek)} m");
 
         // ---------- 3) Radar ----------
         Satir("\n## 3) Radar — Goruyor ne zaman açılıp kapanıyor? (yarı açı 35°, menzil 120 m, Uçaksavar yaw 33°)");
@@ -113,7 +133,7 @@ public class Rota02Deneyleri
         // ---------- 4) Deney: normalize ----------
         Satir("\n## 4) Deney — `.normalized` kaldırılırsa ne olur?");
         {
-            Vector3 fark = balon.position - new Vector3(0, 20, 0);
+            Vector3 fark = balon.position - new Vector3(0, 20, 0); // föydeki başlangıç yüksekliği
             float mesafe = fark.magnitude;
             Quaternion a = Quaternion.LookRotation(fark.normalized);
             Quaternion b = Quaternion.LookRotation(fark);
@@ -127,6 +147,7 @@ public class Rota02Deneyleri
         foreach (float dh in new[] { 60f, 30f, 10f })
         {
             yield return Yukle();
+            HavadaBasla();
             Set(git, "donusHizi", dh);
             float tt = 0, min = float.MaxValue, enUzak = 0, v = -1;
             Vector3 baslangic = ucak.position;
@@ -147,6 +168,7 @@ public class Rota02Deneyleri
         foreach (float ya in new[] { 10f, 35f, 80f })
         {
             yield return Yukle();
+            HavadaBasla();
             Set(radar, "yarimAci", ya);
             float tt = 0, gs = 0;
             while (tt < 20f)
@@ -162,6 +184,7 @@ public class Rota02Deneyleri
         foreach (float x in new[] { +30f, -30f })
         {
             yield return Yukle();
+            HavadaBasla();
             Set(git, "hiz", 0f); // sadece dönüşü gözle
             balon.position = new Vector3(x, 20f, 60f);
             float enBuyukYan = 0, enBuyukSagY = 0;
@@ -179,6 +202,7 @@ public class Rota02Deneyleri
         foreach (float x in new[] { +30f, -30f })
         {
             yield return Yukle();
+            HavadaBasla();
             Set(git, "hiz", 0f); Set(git, "donusHizi", 0f);
             savar.rotation = Quaternion.identity;
             ucak.position = new Vector3(x, 5f, 40f);
@@ -188,6 +212,7 @@ public class Rota02Deneyleri
 
         // ---------- 8) Çizginin yeşile döndüğü açı ----------
         yield return Yukle();
+        HavadaBasla();
         Set(git, "hiz", 0f); Set(git, "donusHizi", 0f);
         ucak.position = new Vector3(20f, 25f, 30f);
         Vector3 d = ucak.position - savar.position;
@@ -214,6 +239,7 @@ public class Rota02Deneyleri
         // ---------- 9) Bonuslar ----------
         Satir("\n## 9) Bonus görevler (ölçüm)");
         yield return Yukle();
+        HavadaBasla();
         var pivot = ucak.Find("UyduYorungesi");
         var uydu = pivot != null ? pivot.Find("Uydu") : null;
         Assert.IsNotNull(uydu, "Uydu yok");
@@ -230,6 +256,7 @@ public class Rota02Deneyleri
         Satir($"- **Uydu:** 5 sn boyunca uçak {F(kat)} m ilerlerken Uydu'nun yörünge pivotuna uzaklığı sabit kaldı (min {F(minR)} m, max {F(maxR)} m) ve Uydu uçakla birlikte gitti (yerel uzay).");
 
         yield return Yukle();
+        HavadaBasla();
         int mermiGorulen = 0; float enYakinMermiMesafe = float.MaxValue; float ilkAtis = -1; float tt2 = 0;
         var gorulenler = new System.Collections.Generic.HashSet<int>();
         float hizOlcum = 0; Vector3 oncekiKonum = Vector3.zero; int oncekiId = 0;
@@ -253,6 +280,7 @@ public class Rota02Deneyleri
         Satir($"- **Mermi:** 8 sn'de {mermiGorulen} mermi üretildi (ilk atış t={F(ilkAtis)} sn, yalnızca `Goruyor` true iken); ölçülen mermi hızı ≈ {F(hizOlcum)} m/s (= normalize yön × 60); mermiler uçağa en fazla {F(enYakinMermiMesafe)} m yaklaştı (düz çizgide, fizik yok; uçak hareket ettiği için tam isabet garanti değil).");
 
         yield return Yukle();
+        HavadaBasla();
         var nis = GameObject.Find("Nisangah");
         Assert.IsNotNull(nis, "Nisangah yok");
         var nisBilesen = nis.GetComponent(Type.GetType("Nisangah, Assembly-CSharp"));

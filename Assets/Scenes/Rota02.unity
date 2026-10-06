@@ -145,6 +145,24 @@ MonoBehaviour:
   hiz: 14
   donusHizi: 60
   varisMesafesi: 8
+--- !u!114 &76180986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76180977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2331490e69846fa8ab3abebe63cfad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kalkis
+  hedef: {fileID: 1454252083}
+  hizlanma: 4.7
+  kalkisHizi: 14
+  tirmanisAcisi: 22
+  burunKaldirma: 14
+  devirYuksekligi: 9
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +249,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.07142789, y: 0.3405909, z: -0.025959637, w: 0.93713504}
+  m_LocalRotation: {x: 0.14358543, y: 0.28650454, z: -0.04347417, w: 0.9462602}
   m_LocalPosition: {x: -45, y: 38, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1172,15 +1190,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1228,6 +1246,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 76180985}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 76180986}
     - targetCorrespondingSourceObject: {fileID: 2094830693417061474, guid: 0b820748f43a8422abf802d57daf1ae3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2090747915}

@@ -9,13 +9,14 @@
 
 | Dosya | Açıklama |
 |---|---|
-| `Assets/Scenes/Rota02.unity` | Uçak `(0,20,0)`, Balon Ø6 `(40,30,60)`, Uçaksavar `(0,0,0)` + namlu |
+| `Assets/Scenes/Rota02.unity` | Uçak pistte `(-20,0,12)` (yerden kalkar), Balon Ø6 `(40,30,60)`, Uçaksavar `(0,0,0)` + namlu |
 | `Assets/Scripts/HedefeGit.cs` | Fark vektörü → `normalized` → `LookRotation` + `RotateTowards`; dış çarpımla kanat yatışı |
 | `Assets/Scripts/Radar.cs` | İç çarpım + kosinüs eşiği (görüş konisi), dış çarpım (sağ/sol), `OnDrawGizmos` |
 | `Rota02/MDA_Calisma_Kagidi.pdf` (`.md`) | MDA çalışma kâğıdı (2048) |
 | `Rota02/scene_gizmos.png` | Gizmos çizgileri görünürken Scene ekran görüntüsü |
 | `Rota02/deney_sonuclari.md` | Föydeki deney ve doğrulamaların otomatik ölçüm sonuçları |
 | `Assets/Tests/PlayMode/Rota02Deneyleri.cs` | Bu ölçümleri üreten PlayMode testi |
+| `Assets/Scripts/Kalkis.cs` | Uçak yerden havalanır: pistte hızlanır → burnunu kaldırıp tırmanır → 9 m'de `HedefeGit`'e devreder |
 | `Assets/Scripts/Uydu.cs`, `KoniCiz.cs`, `MermiAtici.cs`, `Nisangah.cs` | Bonuslar: Uydu, Koniyi çiz, Mermi, Nişangah (fare → dünya) |
 | `Rota02/threejs_notu.md` | Bonus: Three.js editöründe ebeveyn–çocuk (yerel uzay) denemesi |
 
@@ -23,6 +24,7 @@
 
 Föydeki deneyler `Rota02Deneyleri.cs` ile Unity'de otomatik çalıştırıldı (sabit 1/60 sn adım); tüm sayılar `Rota02/deney_sonuclari.md` içinde:
 
+- **Kalkış:** uçak pistte 3.37 sn'de yerden kesiliyor, 5.45 sn'de 9 m'ye çıkıp `HedefeGit`'e devrediyor, 7.08 sn'de balona varıyor.
 - **Hedefe gidiş:** uçak 72.8 m'den 4.63 sn'de varış eşiğine (8 m) iniyor ve titremeden duruyor.
 - **Donus Hizi 10°/s:** 60 sn içinde varış yok, uçak 161 m'ye kadar uzaklaşıp tur atıyor (60°/s'de 4.63 sn).
 - **Yarim Aci:** 10° → 20 sn'de hiç görmüyor; 35° → %87; 80° → %99 (iç çarpım eşiği `cos(açı)`).
